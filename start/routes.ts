@@ -11,6 +11,8 @@ import router from '@adonisjs/core/services/router'
 const TransactionTypologiesController = () =>
   import('#controllers/transaction_typologies_controller')
 
+const RecurringTypesController = () => import('#controllers/recurring_types_controller')
+
 router.get('/', async () => {
   return {
     hello: 'world',
@@ -18,3 +20,5 @@ router.get('/', async () => {
 })
 
 router.get('/transaction-typologies', [TransactionTypologiesController, 'index'])
+
+router.get('/recurring-types', [RecurringTypesController, 'index'])
