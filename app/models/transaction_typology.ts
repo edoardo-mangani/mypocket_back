@@ -1,7 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { column } from '@adonisjs/lucid/orm'
+import BaseSoftDeleteModel from './base_soft_delete_model.js'
 
-export default class TransactionTypology extends BaseModel {
+export default class TransactionTypology extends BaseSoftDeleteModel {
   @column({ isPrimary: true })
   declare id: number
 
@@ -19,7 +20,4 @@ export default class TransactionTypology extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
-
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare deletedAt: DateTime
 }
