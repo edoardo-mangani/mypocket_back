@@ -29,7 +29,13 @@
     "#database/*": "./database/*.js",
     "#start/*": "./start/*.js",
     "#tests/*": "./tests/*.js",
-    "#config/*": "./config/*.js"
+    "#config/*": "./config/*.js",
+    "#transformers/*": "./app/transformers/*.ts",
+    "#contracts/*": "./app/contracts/*.ts",
+    "#utils/*": "./app/utils/*.ts",
+    "#helpers/*": "./app/helpers/*.ts",
+    "#enums/*": "./app/enums/*.ts",
+    "#jobs/*": "./app/jobs/*.ts"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",

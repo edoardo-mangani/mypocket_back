@@ -2,6 +2,20 @@
   "extends": "@adonisjs/tsconfig/tsconfig.app.json",
   "compilerOptions": {
     "rootDir": "./",
-    "outDir": "./build"
+    "outDir": "./build",
+    "baseUrl": "./",
+    "paths": {
+      "#contracts/*": ["app/contracts/*"],
+      "#services/*": ["app/services/*"],
+      "#transformers/*": ["app/transformers/*"],
+      "#exceptions/*": ["app/exceptions/*"],
+      "#validators/*": ["app/validators/*"],
+      "#repositories/*": ["app/repositories/*"],
+      "#middleware/*": ["app/middleware/*"],
+      "#utils/*": ["app/utils/*"],
+      "#helpers/*": ["app/helpers/*"],
+      "#enums/*": ["app/enums/*"],
+      "#jobs/*": ["app/jobs/*"]
+    }
   }
 }

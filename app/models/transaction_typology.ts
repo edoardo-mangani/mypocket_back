@@ -12,9 +12,6 @@ export default class TransactionTypology extends BaseSoftDeleteModel {
   @column()
   declare order: number
 
-  @column()
-  declare isActive: boolean
-
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

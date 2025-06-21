@@ -9,7 +9,6 @@ export default class extends BaseSchema {
 
       table.string('name').notNullable()
       table.integer('order').notNullable()
-      table.boolean('is_active').notNullable().defaultTo(true)
 
       table.timestamp('created_at')
       table.timestamp('updated_at')
