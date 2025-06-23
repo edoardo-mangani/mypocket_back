@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { column, belongsTo, beforeSave } from '@adonisjs/lucid/orm'
+import { column, belongsTo } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
@@ -29,15 +29,13 @@ export default class User extends compose(BaseSoftDeleteModel, AuthFinder) {
   @column()
   declare isActive: boolean
 
-  @belongsTo(() => Role)
-  declare role: BelongsTo<typeof Role>
+  @column()
+  declare roleId: number | null
 
-  @beforeSave()
-  public static async hashPassword(user: any) {
-    if (user.$dirty.password) {
-      user.password = await hash.make(user.password)
-    }
-  }
+  @belongsTo(() => Role, {
+    foreignKey: 'roleId',
+  })
+  declare role: BelongsTo<typeof Role>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
