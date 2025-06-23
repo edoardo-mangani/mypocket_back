@@ -1,5 +1,4 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-
 export default class extends BaseSchema {
   protected tableName = 'transaction_typologies'
 
@@ -13,6 +12,24 @@ export default class extends BaseSchema {
       table.timestamp('created_at')
       table.timestamp('updated_at')
       table.timestamp('deleted_at')
+    })
+
+    // Inserisce i dati iniziali
+    this.defer(async (db) => {
+      await db.table(this.tableName).multiInsert([
+        {
+          name: 'Entrata',
+          order: 1,
+          created_at: this.now(),
+          updated_at: this.now(),
+        },
+        {
+          name: 'Uscita',
+          order: 2,
+          created_at: this.now(),
+          updated_at: this.now(),
+        },
+      ])
     })
   }
 
