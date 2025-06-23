@@ -8,11 +8,11 @@
 */
 
 import router from '@adonisjs/core/services/router'
+import { middleware } from './kernel.js'
+
 const TransactionTypologiesController = () =>
   import('#controllers/transaction_typologies_controller')
-
 const RecurringTypesController = () => import('#controllers/recurring_types_controller')
-
 const AuthController = () => import('#controllers/auth_controller')
 
 router.get('/', async () => {
@@ -33,9 +33,13 @@ router
   .group(() => {
     router.post('/auth/register', [AuthController, 'register'])
     router.post('/auth/login', [AuthController, 'login'])
-    router.get('/auth/me', [AuthController, 'me'])
-    router.post('/auth/logout', [AuthController, 'logout'])
-    router.post('/auth/logout-all', [AuthController, 'logoutAll'])
+    router.get('/auth/verify-email/:id', [AuthController, 'verifyEmail']).as('auth.verify.email')
+    router.get('/auth/me', [AuthController, 'me']).middleware(middleware.auth())
+    router.post('/auth/logout', [AuthController, 'logout']).middleware(middleware.auth())
+    router.post('/auth/logout-all', [AuthController, 'logoutAll']).middleware(middleware.auth())
+    router
+      .post('/auth/resend-verification', [AuthController, 'resendEmailVerification'])
+      .middleware(middleware.auth())
   })
   .prefix('auth')
   .as('auth')
