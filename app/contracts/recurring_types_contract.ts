@@ -1,6 +1,8 @@
+import { RecurrenceEnum } from '#enums/recurrence_enum'
+
 export interface RecurringTypeDTO {
   id: number
-  name: string
+  name: RecurrenceEnum
   order: number
   label: string
 }

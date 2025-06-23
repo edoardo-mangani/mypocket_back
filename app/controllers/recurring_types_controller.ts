@@ -1,13 +1,15 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { RecurringTypesService } from '#services/recurring_types_service'
-import { recurringTypeTransformer } from '#transformers/recurring_types_transformer'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export default class RecurringTypesController {
+  constructor(private recurringTypesService: RecurringTypesService) {}
+
   /**
    * Display a list of resource
    */
   async index({}: HttpContext) {
-    const recurringTypes = await new RecurringTypesService().getAll()
-    return recurringTypes.map(recurringTypeTransformer)
+    return await this.recurringTypesService.getAll()
   }
 }
