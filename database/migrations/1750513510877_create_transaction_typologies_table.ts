@@ -1,4 +1,6 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
+import { TransactionTypologyEnum } from '#enums/transaction_typologies_enum'
+
 export default class extends BaseSchema {
   protected tableName = 'transaction_typologies'
 
@@ -18,13 +20,13 @@ export default class extends BaseSchema {
     this.defer(async (db) => {
       await db.table(this.tableName).multiInsert([
         {
-          name: 'Entrata',
+          name: TransactionTypologyEnum.INCOME,
           order: 1,
           created_at: this.now(),
           updated_at: this.now(),
         },
         {
-          name: 'Uscita',
+          name: TransactionTypologyEnum.EXPENSE,
           order: 2,
           created_at: this.now(),
           updated_at: this.now(),

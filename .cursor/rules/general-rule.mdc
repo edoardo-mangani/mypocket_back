@@ -1,0 +1,17 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Questo è un progetto in AdonisJS 6, con backend che deve tornare solo API per un frontend separato. Tutto quello che fai devi farlo seguendo questa logica. Qui c'è la docs ufficiale: https://docs.adonisjs.com/guides/preface/introduction
+
+Ogni entità deve avere (solo se necessario) i seguenti file:
+
+- Model
+- Migration
+- DTO / Contracts 
+- Validator
+- Service
+- Controller
+- Transformer
+- Seeder

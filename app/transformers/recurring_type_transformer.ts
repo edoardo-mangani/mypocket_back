@@ -1,4 +1,4 @@
-import { RecurringTypeDTO } from '#contracts/recurring_types_contract'
+import { RecurringTypeDTO } from '#contracts/recurring_type_contract'
 import RecurringType from '#models/recurring_type'
 import { recurrenceLabels } from '#enums/recurrence_enum'
 
