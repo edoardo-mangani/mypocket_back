@@ -1,4 +1,4 @@
-import { RoleDTO } from '#contracts/roles_contract'
+import { RoleDTO } from '#contracts/role_contract'
 import Role from '#models/role'
 import { rolesLabels } from '#enums/roles_enum'
 

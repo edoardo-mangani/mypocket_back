@@ -1,5 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { RecurringTypesService } from '#services/recurring_types_service'
+import { RecurringTypesService } from '#services/recurring_type_service'
 import { inject } from '@adonisjs/core'
 
 @inject()

@@ -1,5 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
-import { TransactionTypologiesService } from '#services/transaction_typologies_service'
+import { TransactionTypologiesService } from '#services/transaction_typology_service'
 import { inject } from '@adonisjs/core'
 
 @inject()

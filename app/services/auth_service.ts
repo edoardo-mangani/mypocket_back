@@ -2,9 +2,9 @@ import User from '#models/user'
 import { registerUserValidator, registerUserValidatorMessages } from '#validators/register_user'
 import { loginUserValidator, loginUserValidatorMessages } from '#validators/login_user'
 import { HttpContext } from '@adonisjs/core/http'
-import { userTransformer } from '#transformers/users_transformer'
+import { userTransformer } from '#transformers/user_transformer'
 import { AuthResponseDTO } from '#contracts/auth_contract'
-import { UserDTO } from '#contracts/users_contract'
+import { UserDTO } from '#contracts/user_contract'
 
 export default class AuthService {
   async register(ctx: HttpContext): Promise<AuthResponseDTO> {

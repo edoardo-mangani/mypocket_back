@@ -10,10 +10,10 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
-const TransactionTypologiesController = () =>
-  import('#controllers/transaction_typologies_controller')
-const RecurringTypesController = () => import('#controllers/recurring_types_controller')
+const TransactionTypologiesController = () => import('#controllers/transaction_typology_controller')
+const RecurringTypesController = () => import('#controllers/recurring_type_controller')
 const AuthController = () => import('#controllers/auth_controller')
+const UsersController = () => import('#controllers/user_controller')
 
 router.get('/', async () => {
   return {
@@ -23,23 +23,27 @@ router.get('/', async () => {
 
 router
   .group(() => {
-    router.get('/transaction-typologies', [TransactionTypologiesController, 'index'])
-    router.get('/recurring-types', [RecurringTypesController, 'index'])
+    router
+      .get('/transaction-typologies', [TransactionTypologiesController, 'index'])
+      .as('transaction_typologies.index')
+    router.get('/recurring-types', [RecurringTypesController, 'index']).as('recurring_types.index')
+    router.get('/users', [UsersController, 'index']).as('users.index')
+    router.get('/users/:id', [UsersController, 'show']).as('users.show')
+    router.put('/users/:id', [UsersController, 'update']).as('users.update')
   })
   .prefix('api')
   .as('api')
 
 router
   .group(() => {
-    router.post('/auth/register', [AuthController, 'register'])
-    router.post('/auth/login', [AuthController, 'login'])
-    router.get('/auth/verify-email/:id', [AuthController, 'verifyEmail']).as('auth.verify.email')
-    router.get('/auth/me', [AuthController, 'me']).middleware(middleware.auth())
-    router.post('/auth/logout', [AuthController, 'logout']).middleware(middleware.auth())
-    router.post('/auth/logout-all', [AuthController, 'logoutAll']).middleware(middleware.auth())
+    router.post('/register', [AuthController, 'register']).as('register')
+    router.post('/login', [AuthController, 'login']).as('login')
+    router.get('/me', [AuthController, 'me']).middleware(middleware.auth()).as('me')
+    router.post('/logout', [AuthController, 'logout']).middleware(middleware.auth()).as('logout')
     router
-      .post('/auth/resend-verification', [AuthController, 'resendEmailVerification'])
+      .post('/logout-all', [AuthController, 'logoutAll'])
       .middleware(middleware.auth())
+      .as('logout_all')
   })
   .prefix('auth')
   .as('auth')

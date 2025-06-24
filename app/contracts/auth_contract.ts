@@ -1,4 +1,4 @@
-import { UserDTO } from '#contracts/users_contract'
+import { UserDTO } from '#contracts/user_contract'
 
 export interface AuthResponseDTO {
   user: UserDTO
