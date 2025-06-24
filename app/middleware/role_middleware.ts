@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import { RolesEnum } from '#enums/roles_enum'
+import { ApiResponse } from '#contracts/api_response_contract'
 
 export default class RoleMiddleware {
   async handle(
@@ -25,24 +26,32 @@ export default class RoleMiddleware {
 
     // Verifico che l'utente abbia un ruolo assegnato
     if (!user.role) {
-      return ctx.response.status(403).json({
+      const response: ApiResponse = {
+        success: false,
+        message: "Nessun ruolo assegnato all'utente",
         data: null,
-        error: true,
+        errors: {
+          role: ["Nessun ruolo assegnato all'utente"],
+        },
         error_code: 'NO_ROLE_ASSIGNED',
-        error_message: "Nessun ruolo assegnato all'utente",
-        exception: 'ForbiddenException',
-      })
+        meta: undefined,
+      }
+      return ctx.response.status(403).json(response)
     }
 
     // Verifico che il ruolo dell'utente sia tra quelli autorizzati
     if (!options.roles.includes(user.role.name)) {
-      return ctx.response.status(403).json({
+      const response: ApiResponse = {
+        success: false,
+        message: 'Permessi insufficienti per accedere a questa risorsa',
         data: null,
-        error: true,
+        errors: {
+          role: ['Permessi insufficienti per accedere a questa risorsa'],
+        },
         error_code: 'INSUFFICIENT_PERMISSIONS',
-        error_message: 'Permessi insufficienti per accedere a questa risorsa',
-        exception: 'ForbiddenException',
-      })
+        meta: undefined,
+      }
+      return ctx.response.status(403).json(response)
     }
 
     // L'utente ha i permessi necessari, procedo
