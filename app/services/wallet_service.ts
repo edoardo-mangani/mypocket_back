@@ -1,5 +1,5 @@
 import Wallet from '#models/wallet'
-import { WalletDTO } from '#contracts/wallets_contract'
+import { WalletDTO } from '#contracts/wallet_contract'
 //import { Auth } from '@adonisjs/auth/services/auth'
 
 export class WalletsService {
