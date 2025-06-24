@@ -1,6 +1,6 @@
 import User from '#models/user'
-import { registerUserValidator, registerUserValidatorMessages } from '#validators/register_user'
-import { loginUserValidator, loginUserValidatorMessages } from '#validators/login_user'
+import { registerUserValidator } from '#validators/register_user'
+import { loginUserValidator } from '#validators/login_user'
 import { HttpContext } from '@adonisjs/core/http'
 import { userTransformer } from '#transformers/user_transformer'
 import { AuthResponseDTO } from '#contracts/auth_contract'
@@ -8,14 +8,7 @@ import { UserDTO } from '#contracts/user_contract'
 
 export default class AuthService {
   async register(ctx: HttpContext): Promise<AuthResponseDTO> {
-    const data = await ctx.request.validateUsing(registerUserValidator, {
-      messagesProvider: {
-        getMessage: (field: string, rule: string) => {
-          const key = `${field}.${rule}`
-          return registerUserValidatorMessages[key as keyof typeof registerUserValidatorMessages]
-        },
-      },
-    })
+    const data = await ctx.request.validateUsing(registerUserValidator)
     const user = await User.create(data)
     await user.load('role')
     const token = await User.accessTokens.create(user)
@@ -26,14 +19,7 @@ export default class AuthService {
   }
 
   async login(ctx: HttpContext): Promise<AuthResponseDTO> {
-    const { email, password } = await ctx.request.validateUsing(loginUserValidator, {
-      messagesProvider: {
-        getMessage: (field: string, rule: string) => {
-          const key = `${field}.${rule}`
-          return loginUserValidatorMessages[key as keyof typeof loginUserValidatorMessages]
-        },
-      },
-    })
+    const { email, password } = await ctx.request.validateUsing(loginUserValidator)
     const user = await User.verifyCredentials(email, password)
     await user.load('role')
     const token = await User.accessTokens.create(user)

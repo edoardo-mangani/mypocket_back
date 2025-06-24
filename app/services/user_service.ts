@@ -1,7 +1,7 @@
 import User from '#models/user'
 import { userTransformer } from '#transformers/user_transformer'
 import { UserDTO } from '#contracts/user_contract'
-import { updateUserValidator, updateUserValidatorMessages } from '#validators/update_user'
+import { updateUserValidator } from '#validators/update_user'
 import { HttpContext } from '@adonisjs/core/http'
 
 export class UserService {
@@ -17,14 +17,7 @@ export class UserService {
   }
 
   async update(id: number, ctx: HttpContext): Promise<UserDTO> {
-    const data = await ctx.request.validateUsing(updateUserValidator, {
-      messagesProvider: {
-        getMessage: (field: string, rule: string) => {
-          const key = `${field}.${rule}`
-          return updateUserValidatorMessages[key as keyof typeof updateUserValidatorMessages]
-        },
-      },
-    })
+    const data = await ctx.request.validateUsing(updateUserValidator)
 
     const userToUpdate = await User.findOrFail(id)
     userToUpdate.merge(data)

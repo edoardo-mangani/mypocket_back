@@ -19,17 +19,15 @@ export class ErrorHandler {
 
   static getStatusFromError(error: any): number {
     if (error.status) return error.status
-    if (error.code === 'E_VALIDATION_ERROR') return 422
+    // VineJS validation errors
+    if (error.code === 'E_VALIDATION_ERROR' || error.code === 'E_VALIDATION_FAILURE') return 422
     if (error.code === 'E_ROW_NOT_FOUND') return 404
     if (error.code === 'E_UNAUTHORIZED_ACCESS') return 401
     return 500
   }
 
   static getMessageFromError(error: any): string {
-    if (error.messages && error.messages[0]?.message) {
-      return error.messages[0].message
-    }
-
+    // VineJS errors have a different structure
     if (error.message) return error.message
 
     return 'Si è verificato un errore imprevisto'
@@ -52,11 +50,13 @@ export class ErrorHandler {
   }
 
   static getErrorsFromError(error: any): Record<string, string[]> | undefined {
-    if (error.messages && error.messages.errors) {
+    // VineJS validation errors structure
+    if (error.messages && Array.isArray(error.messages)) {
       const formatted: Record<string, string[]> = {}
-      for (const err of error.messages.errors) {
-        if (!formatted[err.field]) formatted[err.field] = []
-        formatted[err.field].push(err.message)
+      for (const err of error.messages) {
+        const field = err.field || 'general'
+        if (!formatted[field]) formatted[field] = []
+        formatted[field].push(err.message || 'Errore di validazione')
       }
       return formatted
     }
@@ -64,6 +64,18 @@ export class ErrorHandler {
   }
 
   static extractErrorsFromBody(body: any): Record<string, string[]> | undefined {
+    if (typeof body === 'object' && body.errors && Array.isArray(body.errors)) {
+      const formatted: Record<string, string[]> = {}
+
+      for (const err of body.errors) {
+        const field = err.field || 'general'
+        if (!formatted[field]) formatted[field] = []
+        formatted[field].push(err.message || 'Errore di validazione')
+      }
+
+      return formatted
+    }
+
     return typeof body === 'object' && body.errors ? body.errors : undefined
   }
 }

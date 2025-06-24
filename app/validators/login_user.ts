@@ -6,9 +6,3 @@ export const loginUserValidator = vine.compile(
     password: vine.string(),
   })
 )
-
-export const loginUserValidatorMessages = {
-  'email.required': "L'email è obbligatoria",
-  'email.email': "Inserisci un'email valida",
-  'password.required': 'La password è obbligatoria',
-}
