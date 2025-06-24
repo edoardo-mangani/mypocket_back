@@ -9,7 +9,7 @@ export default class TransactionTypologiesController {
   /**
    * Display a list of resource
    */
-  async index({}: HttpContext) {
-    return await this.transactionTypologiesService.getAll()
+  async index(ctx: HttpContext) {
+    return await this.transactionTypologiesService.getAll(ctx)
   }
 }

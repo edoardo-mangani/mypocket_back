@@ -1,13 +1,20 @@
 import RecurringType from '#models/recurring_type'
 import { recurringTypeTransformer } from '#transformers/recurring_type_transformer'
 import { RecurringTypeDTO } from '#contracts/recurring_type_contract'
+import { HttpContext } from '@adonisjs/core/http'
+import { PaginatedResponse } from '#contracts/pagination_contract'
+import { PaginationHelper } from '#utils/pagination_helper'
 
 export class RecurringTypesService {
-  async getAll(): Promise<RecurringTypeDTO[]> {
-    const recurringTypes = (await RecurringType.withoutTrashed().orderBy(
-      'order',
-      'asc'
-    )) as RecurringType[]
-    return recurringTypes.map(recurringTypeTransformer)
+  async getAll(ctx: HttpContext): Promise<PaginatedResponse<RecurringTypeDTO>> {
+    const { page, perPage } = PaginationHelper.getPaginationParams(ctx)
+
+    const paginator = await RecurringType.withoutTrashed()
+      .orderBy('order', 'asc')
+      .paginate(page, perPage)
+
+    const recurringTypes = (paginator.all() as RecurringType[]).map(recurringTypeTransformer)
+
+    return PaginationHelper.createResponse(recurringTypes, paginator)
   }
 }

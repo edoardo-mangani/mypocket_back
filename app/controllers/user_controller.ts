@@ -9,8 +9,8 @@ export default class UsersController {
   /**
    * Display a list of resource
    */
-  async index({}: HttpContext) {
-    return await this.userService.getAll()
+  async index(ctx: HttpContext) {
+    return await this.userService.getAll(ctx)
   }
 
   /**

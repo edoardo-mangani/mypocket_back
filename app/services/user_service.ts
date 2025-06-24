@@ -3,11 +3,22 @@ import { userTransformer } from '#transformers/user_transformer'
 import { UserDTO } from '#contracts/user_contract'
 import { updateUserValidator } from '#validators/update_user'
 import { HttpContext } from '@adonisjs/core/http'
+import { PaginatedResponse } from '#contracts/pagination_contract'
+import { PaginationHelper } from '#utils/pagination_helper'
 
 export class UserService {
-  async getAll(): Promise<UserDTO[]> {
-    const users = await User.query().where('is_active', true).preload('role')
-    return users.map(userTransformer)
+  async getAll(ctx: HttpContext): Promise<PaginatedResponse<UserDTO>> {
+    const { page, perPage } = PaginationHelper.getPaginationParams(ctx)
+
+    const paginator = await User.query()
+      .where('is_active', true)
+      .preload('role')
+      .orderBy('created_at', 'desc')
+      .paginate(page, perPage)
+
+    const users = paginator.all().map(userTransformer)
+
+    return PaginationHelper.createResponse(users, paginator)
   }
 
   async getById(id: number): Promise<UserDTO> {

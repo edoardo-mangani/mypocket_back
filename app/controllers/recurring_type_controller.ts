@@ -9,7 +9,7 @@ export default class RecurringTypesController {
   /**
    * Display a list of resource
    */
-  async index({}: HttpContext) {
-    return await this.recurringTypesService.getAll()
+  async index(ctx: HttpContext) {
+    return await this.recurringTypesService.getAll(ctx)
   }
 }
