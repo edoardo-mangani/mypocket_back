@@ -1,93 +1,53 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
-import { ApiResponse } from '#contracts/api_response_contract'
+import { ApiResponseBuilder } from '#utils/api_response_builder'
+import { ErrorHandler } from '#utils/error_handler'
 
 export default class StandardizeResponseMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     try {
       await next()
-
-      const originalBody = ctx.response.hasLazyBody ? await ctx.response.getBody() : undefined
-
-      if (!originalBody || this.isAlreadyStandardized(originalBody)) return
-
-      const response: ApiResponse = {
-        success: true,
-        message:
-          ctx.response.getStatus() === 201
-            ? 'Creato con successo'
-            : 'Operazione completata con successo',
-        data: originalBody,
-        meta: undefined,
-      }
-
-      ctx.response.safeStatus(ctx.response.getStatus() || 200).json(response)
+      this.handleSuccessResponse(ctx)
     } catch (error) {
-      const statusCode = this.getStatus(error)
-      const response: ApiResponse = {
-        success: false,
-        message: this.getMessage(error),
-        data: null,
-        errors: this.getErrors(error),
-        error_code: this.getErrorCode(error),
-        meta: undefined,
-      }
-
-      ctx.response.safeStatus(statusCode).json(response)
+      this.handleErrorResponse(ctx, error)
     }
   }
 
-  private isAlreadyStandardized(body: any): boolean {
-    return typeof body === 'object' && body.success !== undefined
-  }
+  private handleSuccessResponse(ctx: HttpContext): void {
+    const originalBody = ctx.response.hasLazyBody ? ctx.response.getBody() : undefined
+    const statusCode = ctx.response.getStatus()
 
-  private getStatus(error: any): number {
-    if (error.status) return error.status
-    if (error.code === 'E_VALIDATION_ERROR') return 422
-    if (error.code === 'E_ROW_NOT_FOUND') return 404
-    if (error.code === 'E_UNAUTHORIZED_ACCESS') return 401
-    return 500
-  }
-
-  private getMessage(error: any): string {
-    if (error.messages && error.messages[0]?.message) {
-      return error.messages[0].message
+    // Ignora se non c'è body o è già standardizzato
+    if (!originalBody || ApiResponseBuilder.isAlreadyStandardized(originalBody)) {
+      return
     }
 
-    if (error.message) return error.message
+    // Gestisce gli errori che non hanno lanciato eccezioni
+    if (statusCode >= 400) {
+      const errorResponse = ApiResponseBuilder.error(
+        ErrorHandler.getMessageFromStatus(statusCode),
+        ErrorHandler.extractErrorsFromBody(originalBody),
+        ErrorHandler.getErrorCodeFromStatus(statusCode)
+      )
 
-    return 'Si è verificato un errore imprevisto'
+      ctx.response.safeStatus(statusCode).json(errorResponse)
+      return
+    }
+
+    // Gestisce le risposte di successo
+    const successResponse = ApiResponseBuilder.success(originalBody, statusCode)
+    ctx.response.safeStatus(statusCode || 200).json(successResponse)
   }
 
-  private getErrors(error: any): Record<string, string[]> | undefined {
-    if (error.messages && error.messages.errors) {
-      const formatted: Record<string, string[]> = {}
-      for (const err of error.messages.errors) {
-        if (!formatted[err.field]) formatted[err.field] = []
-        formatted[err.field].push(err.message)
-      }
-      return formatted
-    }
-    return undefined
-  }
+  private handleErrorResponse(ctx: HttpContext, error: any): void {
+    const statusCode = ErrorHandler.getStatusFromError(error)
 
-  private getErrorCode(error: any): string {
-    if (error.code) return error.code
-    switch (this.getStatus(error)) {
-      case 400:
-        return 'BAD_REQUEST'
-      case 401:
-        return 'UNAUTHORIZED'
-      case 403:
-        return 'FORBIDDEN'
-      case 404:
-        return 'NOT_FOUND'
-      case 422:
-        return 'VALIDATION_ERROR'
-      case 500:
-        return 'INTERNAL_SERVER_ERROR'
-      default:
-        return 'UNKNOWN_ERROR'
-    }
+    const errorResponse = ApiResponseBuilder.error(
+      ErrorHandler.getMessageFromError(error),
+      ErrorHandler.getErrorsFromError(error),
+      ErrorHandler.getErrorCodeFromError(error)
+    )
+
+    ctx.response.safeStatus(statusCode).json(errorResponse)
   }
 }
