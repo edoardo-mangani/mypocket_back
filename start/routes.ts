@@ -45,5 +45,5 @@ router
       .middleware(middleware.auth())
       .as('logout_all')
   })
-  .prefix('auth')
-  .as('auth')
+  .prefix('api/auth')
+  .as('api.auth')
