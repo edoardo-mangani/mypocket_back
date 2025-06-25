@@ -6,8 +6,6 @@ import { createWalletValidator } from '#validators/create_wallet'
 import { updateWalletValidator } from '#validators/update_wallet'
 import { usersWalletValidator } from '#validators/add_users_wallet'
 import { removeUsersWalletValidator } from '#validators/remove_users_wallet'
-import logger from '@adonisjs/core/services/logger'
-
 @inject()
 export default class WalletController {
   constructor(private walletsService: WalletsService) {}
@@ -68,7 +66,9 @@ export default class WalletController {
   async addUsersToWallet(ctx: HttpContext) {
     const { id } = ctx.params
 
-    const data = await ctx.request.validateUsing(usersWalletValidator)
+    const data = await ctx.request.validateUsing(usersWalletValidator, {
+      meta: { walletId: Number.parseInt(id) },
+    })
 
     return await this.walletsService.addUsersToWallet(data, Number.parseInt(id))
   }
@@ -78,7 +78,9 @@ export default class WalletController {
    */
   async removeUserFromWallet(ctx: HttpContext) {
     const { id } = ctx.params
-    const data = await ctx.request.validateUsing(removeUsersWalletValidator)
+    const data = await ctx.request.validateUsing(removeUsersWalletValidator, {
+      meta: { walletId: Number.parseInt(id) },
+    })
     return await this.walletsService.removeUserFromWallet(data, Number.parseInt(id))
   }
 }

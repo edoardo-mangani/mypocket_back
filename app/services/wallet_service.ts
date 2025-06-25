@@ -11,7 +11,6 @@ import { usersWalletValidator } from '#validators/add_users_wallet'
 import { removeUsersWalletValidator } from '#validators/remove_users_wallet'
 import { userTransformer } from '#transformers/user_transformer'
 import type { Infer } from '@vinejs/vine/types'
-import logger from '@adonisjs/core/services/logger'
 
 type CreateWalletData = Infer<typeof createWalletValidator>
 type UpdateWalletData = Infer<typeof updateWalletValidator>
@@ -79,8 +78,12 @@ export class WalletsService {
     ) as PaginatedResponse<UserDTO>
   }
 
-  async addUsersToWallet(data: AddUsersData, walletId: number): Promise<void> {
-    const wallet = await Wallet.findOrFail(walletId)
+  async addUsersToWallet(data: AddUsersData, walletId: number): Promise<UserDTO[]> {
+    // Carica wallet e utenti in parallelo per ottimizzare
+    const [wallet, usersToAdd] = await Promise.all([
+      Wallet.findOrFail(walletId),
+      User.withoutTrashed().whereIn('id', data.userIds).preload('role'),
+    ])
 
     const now = new Date()
     const usersData: Record<number, { created_at: Date; updated_at: Date }> = {}
@@ -89,12 +92,21 @@ export class WalletsService {
     })
 
     await wallet.related('users').attach(usersData)
+
+    return usersToAdd.map(userTransformer)
   }
 
-  async removeUserFromWallet(data: RemoveUsersData, walletId: number): Promise<void> {
-    const wallet = await Wallet.findOrFail(walletId)
+  async removeUserFromWallet(data: RemoveUsersData, walletId: number): Promise<UserDTO[]> {
+    // Carica wallet e utenti in parallelo per ottimizzare
+    const [wallet, usersToRemove] = await Promise.all([
+      Wallet.findOrFail(walletId),
+      User.withoutTrashed().whereIn('id', data.userIds).preload('role'),
+    ])
+
     await wallet.related('users').pivotQuery().whereIn('user_id', data.userIds).update({
       deleted_at: new Date(),
     })
+
+    return usersToRemove.map(userTransformer)
   }
 }
