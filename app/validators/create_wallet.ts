@@ -1,8 +1,9 @@
 import vine from '@vinejs/vine'
 
-export const createWalletValidator = vine.compile(
+export const createWalletWithUserValidator = vine.compile(
   vine.object({
-    name: vine.string().optional(),
-    icon_url: vine.string().optional(),
+    name: vine.string().trim().minLength(1).maxLength(255),
+    description: vine.string().trim().optional(),
+    userIds: vine.array(vine.number().positive()).minLength(1), // Almeno un utente deve essere associato
   })
 )
