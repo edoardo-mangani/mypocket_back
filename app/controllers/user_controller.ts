@@ -1,6 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { UserService } from '#services/user_service'
 import { inject } from '@adonisjs/core'
+import { PaginationHelper } from '#utils/pagination_helper'
+import { updateUserValidator } from '#validators/update_user'
 
 @inject()
 export default class UsersController {
@@ -10,7 +12,8 @@ export default class UsersController {
    * Display a list of resource
    */
   async index(ctx: HttpContext) {
-    return await this.userService.getAll(ctx)
+    const paginationParams = PaginationHelper.getPaginationParams(ctx)
+    return await this.userService.getAll(paginationParams)
   }
 
   /**
@@ -30,7 +33,8 @@ export default class UsersController {
    */
   async update(ctx: HttpContext) {
     const { id } = ctx.params
-    return await this.userService.update(id, ctx)
+    const data = await ctx.request.validateUsing(updateUserValidator)
+    return await this.userService.update(id, data)
   }
 
   /**
@@ -48,6 +52,7 @@ export default class UsersController {
    */
   async getWalletsForUser(ctx: HttpContext) {
     const { id } = ctx.params
-    return await this.userService.getWalletsForUser(id, ctx)
+    const paginationParams = PaginationHelper.getPaginationParams(ctx)
+    return await this.userService.getWalletsForUser(id, paginationParams)
   }
 }

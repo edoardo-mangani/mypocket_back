@@ -2,16 +2,21 @@ import User from '#models/user'
 import { userTransformer } from '#transformers/user_transformer'
 import { UserDTO } from '#contracts/user_contract'
 import { updateUserValidator } from '#validators/update_user'
-import { HttpContext } from '@adonisjs/core/http'
 import { PaginatedResponse } from '#contracts/pagination_contract'
 import { PaginationHelper } from '#utils/pagination_helper'
 import { WalletDTO } from '#contracts/wallet_contract'
 import Wallet from '#models/wallet'
 import { walletTransformer } from '#transformers/wallet_transformer'
+import type { Infer } from '@vinejs/vine/types'
+
+type UpdateUserData = Infer<typeof updateUserValidator>
 
 export class UserService {
-  async getAll(ctx: HttpContext): Promise<PaginatedResponse<UserDTO>> {
-    const { page, perPage } = PaginationHelper.getPaginationParams(ctx)
+  async getAll(paginationParams: {
+    page: number
+    perPage: number
+  }): Promise<PaginatedResponse<UserDTO>> {
+    const { page, perPage } = paginationParams
 
     const paginator = await User.withoutTrashed()
       .where('is_active', true)
@@ -30,9 +35,7 @@ export class UserService {
     return userTransformer(user)
   }
 
-  async update(id: number, ctx: HttpContext): Promise<UserDTO> {
-    const data = await ctx.request.validateUsing(updateUserValidator)
-
+  async update(id: number, data: UpdateUserData): Promise<UserDTO> {
     const userToUpdate = await User.findOrFail(id)
     userToUpdate.merge(data)
     await userToUpdate.save()
@@ -40,8 +43,11 @@ export class UserService {
     return userTransformer(userToUpdate)
   }
 
-  async getWalletsForUser(id: number, ctx: HttpContext): Promise<PaginatedResponse<WalletDTO>> {
-    const { page, perPage } = PaginationHelper.getPaginationParams(ctx)
+  async getWalletsForUser(
+    id: number,
+    paginationParams: { page: number; perPage: number }
+  ): Promise<PaginatedResponse<WalletDTO>> {
+    const { page, perPage } = paginationParams
 
     const paginator = await Wallet.withoutTrashed()
       .whereHas('users', (query) => query.where('users.id', id))

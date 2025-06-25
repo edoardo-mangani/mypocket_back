@@ -1,6 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { WalletsService } from '#services/wallet_service'
 import { inject } from '@adonisjs/core'
+import { PaginationHelper } from '#utils/pagination_helper'
+import { createWalletValidator } from '#validators/create_wallet'
+import { updateWalletValidator } from '#validators/update_wallet'
+import { usersWalletValidator } from '#validators/add_users_wallet'
+import { removeUsersWalletValidator } from '#validators/remove_users_wallet'
+import logger from '@adonisjs/core/services/logger'
 
 @inject()
 export default class WalletController {
@@ -10,14 +16,18 @@ export default class WalletController {
    * Display a list of resource
    */
   async index(ctx: HttpContext) {
-    return await this.walletsService.getAll(ctx)
+    const paginationParams = PaginationHelper.getPaginationParams(ctx)
+    return await this.walletsService.getAll(paginationParams)
   }
 
   /**
    * Handle form submission for the create action
    */
   async store(ctx: HttpContext) {
-    return await this.walletsService.create(ctx)
+    const data = await ctx.request.validateUsing(createWalletValidator)
+    const result = await this.walletsService.create(data)
+    ctx.response.status(201)
+    return result
   }
 
   /**
@@ -32,7 +42,8 @@ export default class WalletController {
    */
   async update(ctx: HttpContext) {
     const { id } = ctx.params
-    return await this.walletsService.update(id, ctx)
+    const data = await ctx.request.validateUsing(updateWalletValidator)
+    return await this.walletsService.update(id, data)
   }
 
   /**
@@ -47,7 +58,8 @@ export default class WalletController {
    */
   async getUsersForWallet(ctx: HttpContext) {
     const { id } = ctx.params
-    return await this.walletsService.getUsersForWallet(id, ctx)
+    const paginationParams = PaginationHelper.getPaginationParams(ctx)
+    return await this.walletsService.getUsersForWallet(id, paginationParams)
   }
 
   /**
@@ -55,7 +67,10 @@ export default class WalletController {
    */
   async addUsersToWallet(ctx: HttpContext) {
     const { id } = ctx.params
-    return await this.walletsService.addUsersToWallet(id, ctx)
+
+    const data = await ctx.request.validateUsing(usersWalletValidator)
+
+    return await this.walletsService.addUsersToWallet(data, Number.parseInt(id))
   }
 
   /**
@@ -63,6 +78,7 @@ export default class WalletController {
    */
   async removeUserFromWallet(ctx: HttpContext) {
     const { id } = ctx.params
-    return await this.walletsService.removeUserFromWallet(id, ctx)
+    const data = await ctx.request.validateUsing(removeUsersWalletValidator)
+    return await this.walletsService.removeUserFromWallet(data, Number.parseInt(id))
   }
 }
