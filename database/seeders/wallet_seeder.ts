@@ -31,22 +31,39 @@ export default class extends BaseSeeder {
     // Recupero tutti gli utenti attivi
     const users = await User.withoutTrashed().where('is_active', true)
 
-    // Associo i wallet agli utenti
+    // Associo i wallet agli utenti con timestamp
+    const now = new Date()
+
     // Wallet Personale - solo al primo utente
-    await wallets[0].related('users').attach([users[0].id])
+    await wallets[0].related('users').attach({
+      [users[0].id]: { created_at: now, updated_at: now },
+    })
 
     // Wallet Famiglia - a primi 3 utenti
-    await wallets[1].related('users').attach([users[0].id, users[1].id, users[2].id])
+    await wallets[1].related('users').attach({
+      [users[0].id]: { created_at: now, updated_at: now },
+      [users[1].id]: { created_at: now, updated_at: now },
+      [users[2].id]: { created_at: now, updated_at: now },
+    })
 
     // Risparmi Vacanze - a primi 2 utenti
-    await wallets[2].related('users').attach([users[0].id, users[1].id])
+    await wallets[2].related('users').attach({
+      [users[0].id]: { created_at: now, updated_at: now },
+      [users[1].id]: { created_at: now, updated_at: now },
+    })
 
     // Investimenti - solo al secondo utente
     if (users[1]) {
-      await wallets[3].related('users').attach([users[1].id])
+      await wallets[3].related('users').attach({
+        [users[1].id]: { created_at: now, updated_at: now },
+      })
     }
 
     // Spese Casa - a tutti gli utenti attivi
-    await wallets[4].related('users').attach(users.map((user) => user.id))
+    const allUsersData: Record<number, { created_at: Date; updated_at: Date }> = {}
+    users.forEach((user) => {
+      allUsersData[user.id] = { created_at: now, updated_at: now }
+    })
+    await wallets[4].related('users').attach(allUsersData)
   }
 }

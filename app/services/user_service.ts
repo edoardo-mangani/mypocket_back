@@ -44,7 +44,7 @@ export class UserService {
     const { page, perPage } = PaginationHelper.getPaginationParams(ctx)
 
     const paginator = await Wallet.withoutTrashed()
-      .where('user_id', id)
+      .whereHas('users', (query) => query.where('users.id', id))
       .orderBy('name', 'asc')
       .paginate(page, perPage)
 
