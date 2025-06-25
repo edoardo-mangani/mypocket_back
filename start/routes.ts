@@ -37,10 +37,22 @@ router
     router.put('/wallets/:id', [WalletsController, 'update']).as('wallets.update')
     router.delete('/wallets/:id', [WalletsController, 'delete']).as('wallets.delete')
     router.post('/wallets', [WalletsController, 'store']).as('wallets.store')
+    router
+      .get('/wallets/:id/users', [WalletsController, 'getUsersForWallet'])
+      .as('wallets.getUsersForWallet')
+    router
+      .post('/wallets/:id/users', [WalletsController, 'addUsersToWallet'])
+      .as('wallets.addUsersToWallet')
+    router
+      .delete('/wallets/:id/users', [WalletsController, 'removeUserFromWallet'])
+      .as('wallets.removeUserFromWallet')
     // Users routes
     router.get('/users', [UsersController, 'index']).as('users.index')
     router.get('/users/:id', [UsersController, 'show']).as('users.show')
     router.put('/users/:id', [UsersController, 'update']).as('users.update')
+    router
+      .get('/users/:id/wallets', [UsersController, 'getWalletsForUser'])
+      .as('users.getWalletsForUser')
   })
   .prefix('api')
   .as('api')

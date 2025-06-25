@@ -21,10 +21,10 @@ const uniqueUserWallet = vine.createRule(async (field: any) => {
   }
 })
 
-export const userWalletValidator = vine.compile(
+export const usersWalletValidator = vine.compile(
   vine
     .object({
-      userId: vine.number().positive(),
+      userIds: vine.array(vine.number().positive()).minLength(1),
       walletId: vine.number().positive(),
     })
     .use(uniqueUserWallet())

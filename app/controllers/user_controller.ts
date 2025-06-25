@@ -42,4 +42,12 @@ export default class UsersController {
    * Soft delete record
    */
   //async softDelete({ params }: HttpContext) {}
+
+  /**
+   * Get wallets for user
+   */
+  async getWalletsForUser(ctx: HttpContext) {
+    const { id } = ctx.params
+    return await this.userService.getWalletsForUser(id, ctx)
+  }
 }

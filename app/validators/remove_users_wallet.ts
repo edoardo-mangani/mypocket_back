@@ -29,10 +29,10 @@ const walletMustHaveUser = vine.createRule(async (field: any) => {
   }
 })
 
-export const removeUserWalletValidator = vine.compile(
+export const removeUsersWalletValidator = vine.compile(
   vine
     .object({
-      userId: vine.number().positive(),
+      userIds: vine.array(vine.number().positive()).minLength(1),
       walletId: vine.number().positive(),
     })
     .use(walletMustHaveUser())

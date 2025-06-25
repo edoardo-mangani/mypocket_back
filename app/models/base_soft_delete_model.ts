@@ -27,15 +27,15 @@ export default class BaseSoftDeleteModel extends BaseModel {
     return !this.deletedAt
   }
 
-  public static onlyTrashed() {
+  public static onlyTrashed<T extends typeof BaseSoftDeleteModel>(this: T) {
     return this.query().whereNotNull('deleted_at')
   }
 
-  public static withTrashed() {
+  public static withTrashed<T extends typeof BaseSoftDeleteModel>(this: T) {
     return this.query()
   }
 
-  public static withoutTrashed() {
+  public static withoutTrashed<T extends typeof BaseSoftDeleteModel>(this: T) {
     return this.query().whereNull('deleted_at')
   }
 }
