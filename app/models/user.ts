@@ -1,12 +1,13 @@
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
-import { column, belongsTo } from '@adonisjs/lucid/orm'
+import { column, belongsTo, manyToMany } from '@adonisjs/lucid/orm'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
 import { DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, ManyToMany } from '@adonisjs/lucid/types/relations'
 import BaseSoftDeleteModel from './base_soft_delete_model.js'
 import Role from './role.js'
+import Wallet from './wallet.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -36,6 +37,12 @@ export default class User extends compose(BaseSoftDeleteModel, AuthFinder) {
     foreignKey: 'roleId',
   })
   declare role: BelongsTo<typeof Role>
+
+  @manyToMany(() => Wallet, {
+    pivotTable: 'user_wallets',
+    pivotColumns: ['user_id', 'wallet_id'],
+  })
+  declare wallets: ManyToMany<typeof Wallet>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -1,13 +1,8 @@
-import { schema } from '@adonisjs/validator'
+import vine from '@vinejs/vine'
 
-export default class CreateWalletValidator {
-  public schema = schema.create({
-    name: schema.string.optional({ trim: true }),
-    icon_url: schema.string.optional({ trim: true }),
+export const createWalletValidator = vine.compile(
+  vine.object({
+    name: vine.string().optional(),
+    icon_url: vine.string().optional(),
   })
-
-  public messages = {
-    'name.string': 'Il nome deve essere una stringa',
-    'icon_url.string': 'L’URL dell’icona deve essere una stringa',
-  }
-}
+)
