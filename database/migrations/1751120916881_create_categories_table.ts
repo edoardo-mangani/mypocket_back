@@ -8,8 +8,7 @@ export default class extends BaseSchema {
       table.increments('id')
 
       table.string('name').notNullable()
-      table.string('slug').notNullable()
-      table.string('icon_url').notNullable()
+      table.string('icon_url').nullable()
 
       table.integer('wallet_id').unsigned().nullable()
       table.foreign('wallet_id').references('id').inTable('wallets').onDelete('set null')

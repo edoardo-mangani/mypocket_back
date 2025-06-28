@@ -15,6 +15,7 @@ const RecurringTypesController = () => import('#controllers/recurring_type_contr
 const AuthController = () => import('#controllers/auth_controller')
 const UsersController = () => import('#controllers/user_controller')
 const WalletsController = () => import('#controllers/wallet_controller')
+const CategoriesController = () => import('#controllers/category_controller')
 
 router.get('/', async () => {
   return {
@@ -31,6 +32,12 @@ router
       .as('transaction_typologies.index')
     // Recurring types routes
     router.get('/recurring-types', [RecurringTypesController, 'index']).as('recurring_types.index')
+    // Categories routes
+    router.get('/categories', [CategoriesController, 'index']).as('categories.index')
+    router.get('/categories/:id', [CategoriesController, 'show']).as('categories.show')
+    router.put('/categories/:id', [CategoriesController, 'update']).as('categories.update')
+    router.delete('/categories/:id', [CategoriesController, 'delete']).as('categories.delete')
+    router.post('/categories', [CategoriesController, 'store']).as('categories.store')
     // Wallets routes
     router.get('/wallets', [WalletsController, 'index']).as('wallets.index')
     router.get('/wallets/:id', [WalletsController, 'show']).as('wallets.show')

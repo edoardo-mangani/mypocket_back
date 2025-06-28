@@ -12,10 +12,7 @@ export default class Category extends BaseSoftDeleteModel {
   declare name: string
 
   @column()
-  declare slug: string
-
-  @column()
-  declare iconUrl: string
+  declare iconUrl: string | null
 
   @column()
   declare walletId: number | null
