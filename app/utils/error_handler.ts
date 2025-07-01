@@ -23,13 +23,23 @@ export class ErrorHandler {
     if (error.code === 'E_VALIDATION_ERROR' || error.code === 'E_VALIDATION_FAILURE') return 422
     if (error.code === 'E_ROW_NOT_FOUND') return 404
     if (error.code === 'E_UNAUTHORIZED_ACCESS') return 401
+    if (error.code === 'E_FORBIDDEN_OPERATION') return 403
     return 500
   }
 
   static getMessageFromError(error: any): string {
-    // VineJS errors have a different structure
-    if (error.message) return error.message
+    // Priorità 1: messaggio custom dell'eccezione
+    if (error.message && error.message.trim() !== '') {
+      return error.message
+    }
 
+    // Priorità 2: messaggio basato sullo status code se disponibile
+    const statusCode = this.getStatusFromError(error)
+    if (statusCode && this.ERROR_MESSAGES[statusCode as keyof typeof this.ERROR_MESSAGES]) {
+      return this.ERROR_MESSAGES[statusCode as keyof typeof this.ERROR_MESSAGES]
+    }
+
+    // Fallback finale
     return 'Si è verificato un errore imprevisto'
   }
 

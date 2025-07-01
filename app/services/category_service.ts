@@ -7,6 +7,7 @@ import { PaginationHelper } from '#utils/pagination_helper'
 import { createCategoryValidator } from '#validators/create_category'
 import type { Infer } from '@vinejs/vine/types'
 import { updateCategoryValidator } from '#validators/update_category'
+import ForbiddenOperationException from '#exceptions/forbidden_operation_exception'
 
 type CreateCategoryData = Infer<typeof createCategoryValidator>
 type UpdateCategoryData = Infer<typeof updateCategoryValidator>
@@ -34,9 +35,11 @@ export class CategoryService {
 
   async update(id: number, data: UpdateCategoryData): Promise<CategoryDTO> {
     const category = await Category.findOrFail(id)
+
     if (!category.isCustom) {
-      throw new Error('Non è possibile modificare una categoria standard')
+      throw new ForbiddenOperationException('Non è possibile modificare una categoria standard')
     }
+
     category.merge(data)
     await category.save()
     return categoryTransformer(category)
