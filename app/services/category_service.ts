@@ -34,6 +34,9 @@ export class CategoryService {
 
   async update(id: number, data: UpdateCategoryData): Promise<CategoryDTO> {
     const category = await Category.findOrFail(id)
+    if (!category.isCustom) {
+      throw new Error('Non è possibile modificare una categoria standard')
+    }
     category.merge(data)
     await category.save()
     return categoryTransformer(category)
